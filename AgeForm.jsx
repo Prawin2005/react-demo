@@ -1,61 +1,52 @@
 import { useState } from "react";
 
 export const AgeForm = () => {
-  const [data, setData] = useState({ name: "", email: "", age: "" });
-  const [errors, setErrors] = useState({});
+  const [data, setData] = useState({
+     name: "",
+     email: "",
+     age: "" });
+  const [error, setError] = useState("");
 
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setData({ ...data, [name]: value });
-  };
-
-  const handleSubmit = () => {
-    const newErrors = {};
+  const handleChange = (e, field) => {
+    const value = e.target.value;
+    setData({ ...data, [field]: value });
 
    
-    if (!data.name) newErrors.name = "Enter your name";
-    else if (/\d/.test(data.name)) newErrors.name = "Name cannot have numbers";
+    if (field === "name") {
+      if (!value) setError("Enter your name");
+      else if (/\d/.test(value)) setError("Name cannot have numbers");
+      else setError("");
+    }
 
+    if (field === "email") {
+      if (!value) setError("Enter your email");
+      else if (!/^[^\s@]+@[^\s@]+\.com$/.test(value))
+        setError("Email must end with .com");
+      else setError("");
+    }
 
-    if (!data.email) newErrors.email = "Enter your email";
-    else if (!/^[^\s@]+@[^\s@]+\.com$/.test(data.email))
-      newErrors.email = "Email must end with .com";
-
- 
-    if (!data.age) newErrors.age = "Enter your age";
-    else if (/\D/.test(data.age)) newErrors.age = "Age must be a number";
-    else if (Number(data.age) < 0) newErrors.age = "Age cannot be negative";
-
-    setErrors(newErrors);
-
-    if (Object.keys(newErrors).length === 0) {
-      console.log("Form submitted!", data);
-    } else {
-      console.log("Fix errors before submitting!");
+    if (field === "age") {
+      if (!value) setError("Enter your age");
+      else if (/\D/.test(value)) setError("Age must be a number");
+      else if (Number(value) < 0) setError("Age cannot be negative");
+      else setError("");
     }
   };
 
   return (
-    <div className="Form-fields">
-      <div>
-        <label>Name:</label>
-        <input type="text" name="name" value={data.name} onChange={handleChange} />
-        {errors.name && <p style={{ color: "red" }}>{errors.name}</p>}
-      </div>
+    <div className="form-fields">
+      <h3>Enter Your Details</h3>
 
-      <div>
-        <label>Email:</label>
-        <input type="email" name="email" value={data.email} onChange={handleChange} />
-        {errors.email && <p style={{ color: "red" }}>{errors.email}</p>}
-      </div>
+      <label>Name: </label>
+      <input name="name" value={data.name} onChange={e => handleChange(e, "name")} />
 
-      <div>
-        <label>Age:</label>
-        <input type="text" name="age" value={data.age} onChange={handleChange} />
-        {errors.age && <p style={{ color: "red" }}>{errors.age}</p>}
-      </div>
+      <label>Email: </label>
+      <input name="email" value={data.email} onChange={e => handleChange(e, "email")} />
 
-      <button onClick={handleSubmit}>Submit</button>
+      <label>Age: </label>
+      <input name="age" value={data.age} onChange={e => handleChange(e, "age")} />
+
+      {error && <p style={{ color: "red" }}>{error}</p>}
     </div>
   );
 };
